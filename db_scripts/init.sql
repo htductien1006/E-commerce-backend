@@ -172,7 +172,7 @@ INSERT INTO inventory (quantity) VALUES
 -- Insert Promotion data --
 INSERT INTO promotion (name, description, type, discount_percent, active, start_date, end_date)
     VALUES (
-        'International Men's Day Discount',
+        'International Men Day Discount',
         'Chào mừng ngày quốc tế nam giới 19/11, hãy tận hưởng ngày lễ đặc biệt duy nhất giành cho phái mạnh đi nào!',
         'discount',
         99,
