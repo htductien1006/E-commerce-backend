@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import models as auth_model
+from django.contrib.auth.models import Permission
 
 # Create your models here.
 
@@ -49,6 +50,8 @@ class Admin(auth_model.BaseUserManager):
             is_staff=True,
             is_superuser=True,
         )
+        delete_user_permission = Permission.objects.get(codename='delete_user')
+        user.user_permissions.add(delete_user_permission)
         user.save()
 
         return user

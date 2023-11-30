@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import User
 
 from . import services
 
@@ -15,3 +16,10 @@ class UserSerializer(serializers.Serializer):
         data = super().to_internal_value(data)
 
         return services.UserDataClass(**data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username',
+                  'phone_number', 'country', 'address', 'postal_code')

@@ -50,9 +50,19 @@ class UserApi(views.APIView):
 
     def get(self, request):
         user = request.user
-        serializer = user_serializer.UserSerializer(user)
+        serializer = user_serializer.UserProfileSerializer(user)
 
         return response.Response(serializer.data)
+
+    def put(self, request):
+        serializer = user_serializer.UserProfileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_profile = serializer.validated_data
+        serializer.instance = services.update_user_profile(
+            user=request.user, user_id=request.user.id, user_data=user_profile
+        )
+
+        return response.Response(data=serializer.data)
 
 
 class LogoutApi(views.APIView):
