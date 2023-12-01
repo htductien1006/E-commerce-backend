@@ -1,39 +1,12 @@
-CREATE TABLE IF NOT EXISTS category
-(
-  _id SERIAL NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (_id)
-);
-
-CREATE TABLE IF NOT EXISTS inventory
-(
-  _id SERIAL NOT NULL,
-  quantity INT NOT NULL,
-  PRIMARY KEY (_id)
-);
-
-CREATE TABLE IF NOT EXISTS promotion
-(
-  _id SERIAL NOT NULL,
-  name VARCHAR(50) NOT NULL,
-  description VARCHAR(255),
-  type_of_promotion VARCHAR(50) NOT NULL,
-  discount_percent INT NOT NULL,
-  active BOOLEAN NOT NULL,
-  start_date TIMESTAMP NOT NULL,
-  end_date TIMESTAMP NOT NULL,
-  PRIMARY KEY (_id)
-);
-
-CREATE TABLE IF NOT EXISTS payment_details
-(
-  _id SERIAL NOT NULL,
-  payment_type VARCHAR(50) NOT NULL,
-  amount INT NOT NULL,
-  status VARCHAR(10) NOT NULL,
-  create_time DATE NOT NULL,
-  PRIMARY KEY (_id)
-);
+-- CREATE TABLE IF NOT EXISTS payment_details
+-- (
+--   _id SERIAL NOT NULL,
+--   payment_type VARCHAR(50) NOT NULL,
+--   amount INT NOT NULL,
+--   status VARCHAR(10) NOT NULL,
+--   create_time DATE NOT NULL,
+--   PRIMARY KEY (_id)
+-- );
 
 -- CREATE TABLE IF NOT EXISTS user_account
 -- (
@@ -58,17 +31,17 @@ CREATE TABLE IF NOT EXISTS payment_details
 --   FOREIGN KEY (user_id) REFERENCES user_account(_id)
 -- );
 
-CREATE TABLE IF NOT EXISTS user_credit
-(
-  _id SERIAL NOT NULL,
-  credit_type VARCHAR(50) NOT NULL,
-  bank_name VARCHAR(100) NOT NULL,
-  bank_branch VARCHAR(255) NOT NULL,
-  credit_number VARCHAR(20) NOT NULL,
-  user_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (user_id) REFERENCES user_account(_id)
-);
+-- CREATE TABLE IF NOT EXISTS user_credit
+-- (
+--   _id SERIAL NOT NULL,
+--   credit_type VARCHAR(50) NOT NULL,
+--   bank_name VARCHAR(100) NOT NULL,
+--   bank_branch VARCHAR(255) NOT NULL,
+--   credit_number VARCHAR(20) NOT NULL,
+--   user_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (user_id) REFERENCES user_account(_id)
+-- );
 
 -- CREATE TABLE IF NOT EXISTS admin_account
 -- (
@@ -81,72 +54,72 @@ CREATE TABLE IF NOT EXISTS user_credit
 --   PRIMARY KEY (_id)
 -- );
 
-CREATE TABLE IF NOT EXISTS product
-(
-  _id SERIAL NOT NULL,
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(1000),
-  price INT NOT NULL,
-  uom_name VARCHAR(20),
-  uom_quantitative INT,
-  image_url VARCHAR(255) NOT NULL,
-  category_id INTEGER NOT NULL,
-  inventory_id INTEGER NOT NULL,
-  promotion_id INTEGER,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (category_id) REFERENCES category(_id),
-  FOREIGN KEY (inventory_id) REFERENCES inventory(_id),
-  FOREIGN KEY (promotion_id) REFERENCES promotion(_id)
-);
+-- CREATE TABLE IF NOT EXISTS product
+-- (
+--   _id SERIAL NOT NULL,
+--   name VARCHAR(100) NOT NULL,
+--   description VARCHAR(1000),
+--   price INT NOT NULL,
+--   uom_name VARCHAR(20),
+--   uom_quantitative INT,
+--   image_url VARCHAR(255) NOT NULL,
+--   category_id INTEGER NOT NULL,
+--   inventory_id INTEGER NOT NULL,
+--   promotion_id INTEGER,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (category_id) REFERENCES category(_id),
+--   FOREIGN KEY (inventory_id) REFERENCES inventory(_id),
+--   FOREIGN KEY (promotion_id) REFERENCES promotion(_id)
+-- );
 
-CREATE TABLE IF NOT EXISTS shopping_session
-(
-  _id SERIAL NOT NULL,
-  total INT NOT NULL,
-  user_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (user_id) REFERENCES user_account(_id)
-);
+-- CREATE TABLE IF NOT EXISTS shopping_session
+-- (
+--   _id SERIAL NOT NULL,
+--   total INT NOT NULL,
+--   user_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (user_id) REFERENCES user_account(_id)
+-- );
 
-CREATE TABLE IF NOT EXISTS order_details
-(
-  _id SERIAL NOT NULL,
-  total INT NOT NULL,
-  payment_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (payment_id) REFERENCES payment_details(_id),
-  FOREIGN KEY (user_id) REFERENCES user_account(_id)
-);
+-- CREATE TABLE IF NOT EXISTS order_details
+-- (
+--   _id SERIAL NOT NULL,
+--   total INT NOT NULL,
+--   payment_id INTEGER NOT NULL,
+--   user_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (payment_id) REFERENCES payment_details(_id),
+--   FOREIGN KEY (user_id) REFERENCES user_account(_id)
+-- );
 
-CREATE TABLE IF NOT EXISTS order_items
-(
-  _id SERIAL NOT NULL,
-  quantity INT NOT NULL,
-  product_id INTEGER NOT NULL,
-  order_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (product_id) REFERENCES product(_id),
-  FOREIGN KEY (order_id) REFERENCES order_details(_id)
-);
+-- CREATE TABLE IF NOT EXISTS order_items
+-- (
+--   _id SERIAL NOT NULL,
+--   quantity INT NOT NULL,
+--   product_id INTEGER NOT NULL,
+--   order_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (product_id) REFERENCES product(_id),
+--   FOREIGN KEY (order_id) REFERENCES order_details(_id)
+-- );
 
-CREATE TABLE IF NOT EXISTS cart_items
-(
-  _id SERIAL NOT NULL,
-  quantity INT NOT NULL,
-  product_id INTEGER NOT NULL,
-  session_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (product_id) REFERENCES product(_id),
-  FOREIGN KEY (session_id) REFERENCES shopping_session(_id)
-);
+-- CREATE TABLE IF NOT EXISTS cart_items
+-- (
+--   _id SERIAL NOT NULL,
+--   quantity INT NOT NULL,
+--   product_id INTEGER NOT NULL,
+--   session_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (product_id) REFERENCES product(_id),
+--   FOREIGN KEY (session_id) REFERENCES shopping_session(_id)
+-- );
 
 
 
 
 
 -- Insert Category data --
-INSERT INTO category (name) VALUES
+INSERT INTO public.product_service_category (name) VALUES
     ('Bút'),
     ('Sổ tay'),
     ('Kỷ niệm chương'),
@@ -157,7 +130,7 @@ INSERT INTO category (name) VALUES
     ('Bình giữ nhiệt');
 
 -- Insert Inventory data --
-INSERT INTO inventory (quantity) VALUES
+INSERT INTO public.product_service_inventory (quantity) VALUES
   (floor(random() * (10000 - 50 + 1) + 50)::int),
   (floor(random() * (10000 - 50 + 1) + 50)::int),
   (floor(random() * (10000 - 50 + 1) + 50)::int),
@@ -170,7 +143,7 @@ INSERT INTO inventory (quantity) VALUES
   (floor(random() * (10000 - 50 + 1) + 50)::int);
 
 -- Insert Promotion data --
-INSERT INTO promotion (name, description, type, discount_percent, active, start_date, end_date)
+INSERT INTO public.product_service_promotion (name, description, type_of_promotion, discount_percent, active, start_date, end_date)
     VALUES (
         'International Men Day Discount',
         'Chào mừng ngày quốc tế nam giới 19/11, hãy tận hưởng ngày lễ đặc biệt duy nhất giành cho phái mạnh đi nào!',
@@ -191,7 +164,7 @@ INSERT INTO promotion (name, description, type, discount_percent, active, start_
     );
 
 -- Insert Product data --
-INSERT INTO product (name, description, price, uom_name, uom_quantitative, image_url, category_id, inventory_id, promotion_id) VALUES
+INSERT INTO public.product_service_product (name, description, price, uom_name, uom_quantitive, image_url, category_id_id, inventory_id_id, promotion_id_id) VALUES
     (
     'Bút Bi Vỏ Gỗ',
     'Bút bi vỏ gỗ là dòng bút bi, toàn thân vỏ được làm bằng gỗ tự nhiên nên có màu sắc của các vân gỗ được mài nhẵn khá bắt mắt, tạo nên đặc trưng riêng cho dòng bút gỗ.',

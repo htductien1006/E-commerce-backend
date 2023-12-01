@@ -46,5 +46,5 @@ class PromotionAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Promotion, PromotionAdmin)
-admin.site.register(models.Invetory, InventoryAdmin)
+admin.site.register(models.Inventory, InventoryAdmin)
 admin.site.register(models.Category, CategoryAdmin)
