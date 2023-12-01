@@ -39,11 +39,6 @@ class LoginApi(views.APIView):
 
 
 class UserApi(views.APIView):
-    """
-    This endpoint can only be used
-    if the user is authenticated / Because it have authentication_classes and 
-    permission_classes
-    """
 
     authentication_classes = (authentication.CustomUserAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)

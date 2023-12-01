@@ -3,6 +3,7 @@ from . import models
 
 
 class UserAdmin(admin.ModelAdmin):
+    ordering = ('id',)
     list_display = (
         "id",
         "first_name",
@@ -10,9 +11,6 @@ class UserAdmin(admin.ModelAdmin):
         "username",
         "email"
     )
-
-    def has_delete_permission(self, *args, **kwargs):
-        return True
 
 
 admin.site.register(models.User, UserAdmin)
