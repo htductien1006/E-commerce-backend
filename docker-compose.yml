@@ -23,6 +23,13 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+  pgadmin:
+    image: dpage/pgadmin4
+    environment: 
+        - PGADMIN_DEFAULT_EMAIL=huy.dang110902@gmail.com 
+        - PGADMIN_DEFAULT_PASSWORD=huyhieu456  
+    ports: 
+        - "8070:80"
     
 
 volumes:
