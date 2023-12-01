@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS promotion
   _id SERIAL NOT NULL,
   name VARCHAR(50) NOT NULL,
   description VARCHAR(255),
-  type VARCHAR(50) NOT NULL,
+  type_of_promotion VARCHAR(50) NOT NULL,
   discount_percent INT NOT NULL,
   active BOOLEAN NOT NULL,
   start_date TIMESTAMP NOT NULL,
@@ -29,34 +29,34 @@ CREATE TABLE IF NOT EXISTS payment_details
 (
   _id SERIAL NOT NULL,
   payment_type VARCHAR(50) NOT NULL,
-  amont INT NOT NULL,
+  amount INT NOT NULL,
   status VARCHAR(10) NOT NULL,
   create_time DATE NOT NULL,
   PRIMARY KEY (_id)
 );
 
-CREATE TABLE IF NOT EXISTS user_account
-(
-  _id SERIAL NOT NULL,
-  username VARCHAR(50) NOT NULL,
-  password VARCHAR(50) NOT NULL,
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (_id)
-);
+-- CREATE TABLE IF NOT EXISTS user_account
+-- (
+--   _id SERIAL NOT NULL,
+--   username VARCHAR(50) NOT NULL,
+--   password VARCHAR(50) NOT NULL,
+--   first_name VARCHAR(50) NOT NULL,
+--   last_name VARCHAR(50) NOT NULL,
+--   PRIMARY KEY (_id)
+-- );
 
-CREATE TABLE IF NOT EXISTS user_address
-(
-  _id SERIAL NOT NULL,
-  address VARCHAR(100) NOT NULL,
-  postal_code VARCHAR(10) NOT NULL,
-  country VARCHAR(50) NOT NULL,
-  phone_number VARCHAR(20) NOT NULL,
-  email VARCHAR(100) NOT NULL,
-  user_id INTEGER NOT NULL,
-  PRIMARY KEY (_id),
-  FOREIGN KEY (user_id) REFERENCES user_account(_id)
-);
+-- CREATE TABLE IF NOT EXISTS user_address
+-- (
+--   _id SERIAL NOT NULL,
+--   address VARCHAR(100) NOT NULL,
+--   postal_code VARCHAR(10) NOT NULL,
+--   country VARCHAR(50) NOT NULL,
+--   phone_number VARCHAR(20) NOT NULL,
+--   email VARCHAR(100) NOT NULL,
+--   user_id INTEGER NOT NULL,
+--   PRIMARY KEY (_id),
+--   FOREIGN KEY (user_id) REFERENCES user_account(_id)
+-- );
 
 CREATE TABLE IF NOT EXISTS user_credit
 (
@@ -70,16 +70,16 @@ CREATE TABLE IF NOT EXISTS user_credit
   FOREIGN KEY (user_id) REFERENCES user_account(_id)
 );
 
-CREATE TABLE IF NOT EXISTS admin_account
-(
-  _id SERIAL NOT NULL,
-  username VARCHAR(50) NOT NULL,
-  password VARCHAR(100) NOT NULL,
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  last_login TIMESTAMP NOT NULL,
-  PRIMARY KEY (_id)
-);
+-- CREATE TABLE IF NOT EXISTS admin_account
+-- (
+--   _id SERIAL NOT NULL,
+--   username VARCHAR(50) NOT NULL,
+--   password VARCHAR(100) NOT NULL,
+--   first_name VARCHAR(50) NOT NULL,
+--   last_name VARCHAR(50) NOT NULL,
+--   last_login TIMESTAMP NOT NULL,
+--   PRIMARY KEY (_id)
+-- );
 
 CREATE TABLE IF NOT EXISTS product
 (
