@@ -1,4 +1,5 @@
 from rest_framework import views, response, exceptions, permissions
+from product_service import service
 from . import models
 from . import serializers as user_serializer
 from . import services, authentication
@@ -69,6 +70,8 @@ class LogoutApi(views.APIView):
         resp = response.Response()
         check_session = models.ShoppingSession.objects.get(user_id=user)
         if check_session:
+            service.create_order_detail(
+                shoppingsesion_data=check_session, user_id=user.id)
             check_session.delete()
         resp.delete_cookie("jwt")
         resp.data = {"message": "Good Bye"}

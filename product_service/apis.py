@@ -2,6 +2,7 @@ from rest_framework import views, response, exceptions, permissions
 from . import serializers as product_service_serializer
 from . import models as models
 from django.shortcuts import get_object_or_404
+from user_service.models import ShoppingSession
 from user_service import serializers as user_serializer
 from user_service import authentication
 from . import service
@@ -28,20 +29,50 @@ class ProductDetailApi(views.APIView):
 
 # --------------------------Session API----------
 
-class OrderDetailAPI(views.APIView):
+class OrderDetailListAPI(views.APIView):
     def get(self, request, shopping_id):
-        orderdetail_list = models.OrderDetails.objects.get(id=shopping_id)
-        orderdetail_response = [{'total': entry.total, 'payment_id': entry.payment_id}
+        user = request.user
+        orderdetail_list = models.Orderdetail.objects.get(user_id=user)
+        orderdetail_response = [{'total': entry.total, 'payment_amount': entry.payment_id.amount, 'status': entry.payment_id.status, }
                                 for entry in orderdetail_list]
         return response.Response(data=orderdetail_response)
 
 
 class OrderItemsAPI(views.APIView):
-    def post(self, request):
-        product_id = request.data['id']
-        quantity = request.data['quantity']
+    def get(self, request, orderdetail_id):
+        orderitem_list = get_object_or_404(
+            models.OrderItems, order_id=orderdetail_id)
+        data_response = [{
+            'id': orderitem.id,
+            'quantity': orderitem.quantity,
+            'product_id': {
+                'id': orderitem.product_id.id,
+                'name': orderitem.product_id.name,
+                'price': orderitem.product_id.price,
+                'uom_name': orderitem.product_id.uom_name,
+                'uom_quantitive': orderitem.product_id.uom_quantitive
+            }
+        } for orderitem in orderitem_list]
 
-        return response.Response(data={})
+        return response.Response(data=data_response)
+
+
+class OrderItemsDetailAPI(views.APIView):
+    def get(self, request, orderitem_id):
+        orderitem = get_object_or_404(models.OrderItems, pk=orderitem_id)
+        data_response = {
+            'id': orderitem.id,
+            'quantity': orderitem.quantity,
+            'product_id': {
+                'id': orderitem.product_id.id,
+                'name': orderitem.product_id.name,
+                'price': orderitem.product_id.price,
+                'uom_name': orderitem.product_id.uom_name,
+                'uom_quantitive': orderitem.product_id.uom_quantitive
+            }
+        }
+
+        return response.Response(data=data_response)
 
 
 # --------------------------------------------CartItem----------------------------
@@ -53,7 +84,6 @@ class AddCartItemsAPI(views.APIView):
         current_user = request.user
         res = service.create_cart_item(
             cartitem_data=request.data, user_id=current_user.id)
-        print(res)
         return response.Response(data=res)
 
 
@@ -77,4 +107,41 @@ class CartItemDetailAPI(views.APIView):
 
     def delete(self, request, cart_id):
         res = service.delete_cart_item(cart_id=cart_id)
+        return response.Response(data=res)
+
+
+# --------------------------------------------Payment----------------------------
+
+class PaymentDetailAPI(views.APIView):
+    def get(self, request, payment_id):
+        payment_item = get_object_or_404(models.PaymentDetail, pk=payment_id)
+        payment_response = {
+            "id": payment_item.id,
+            "payment_type": payment_item.quantity,
+            "amount": payment_item.quantity,
+            "status": payment_item.status
+        }
+        return response.Response(data=payment_response)
+
+    def put(self, request, payment_id):
+        user = request.user
+        payment_id = get_object_or_404(models.PaymentDetail, pk=payment_id)
+        shoppingsession_data = ShoppingSession.objects.get(
+            payment_id=payment_id)
+        if request.data['status'] == "Completed":
+            service.create_order_detail(
+                shoppingsesion_data=shoppingsession_data, user_id=user.id)
+            shoppingsession_data.delete()
+            payment = service.create_payment_detail()
+            instance = models.ShoppingSession(
+                user_id=user, payment_id=payment, total=0)
+            instance.save()
+
+        data = {
+            'payment_type': request.data['payment_type'],
+            'amount': request.data['amount'],
+            'status': request.data['status']
+        }
+        res = service.update_payment_detail(
+            payment_id=payment_id, data_change=data)
         return response.Response(data=res)

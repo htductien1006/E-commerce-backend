@@ -31,7 +31,7 @@ class Promotion(models.Model):
 class Product(models.Model):
     name = models.CharField(_('Product Name'), max_length=255)
     description = models.TextField(_('Description'))
-    price = models.IntegerField(_('Price'))
+    price = models.IntegerField(_('Price'), default=0)
     uom_name = models.CharField(_('UOM Name'), max_length=255)
     uom_quantitive = models.IntegerField(_('UOM Quantity'))
     image_url = models.CharField(_('Image Url'))
@@ -42,6 +42,14 @@ class Product(models.Model):
         "Inventory", on_delete=models.CASCADE, to_field='id', default=0)
     promotion_id = models.ForeignKey(
         "Promotion", on_delete=models.CASCADE, to_field='id', default=0)
+
+    # @property
+    # def price(self):
+    #     if self.promotion_id:
+    #         new_price = self.old_price - ((30/100)*self.old_price)
+    #     else:
+    #         new_price = self.old_price
+    #     return new_price
 
 
 # ----------------------------Order Payment---------------------------------
