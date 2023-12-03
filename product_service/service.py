@@ -1,9 +1,3 @@
-import dataclasses
-import datetime
-import jwt
-from rest_framework import exceptions
-from typing import TYPE_CHECKING
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from . import models
 from user_service.models import ShoppingSession, User
@@ -23,41 +17,36 @@ def update_payment_detail(payment_id, data_change):
     instance = get_object_or_404(models.PaymentDetail, pk=payment_id)
     if (data_change['payment_type']):
         instance.payment_type = data_change['payment_type']
-    if (data_change['amount']):
-        instance.amount = data_change['amount']
     if (data_change['status']):
         instance.status = data_change['status']
     instance.save()
+    payment_response = {
+        "id": instance.id,
+        "payment_type": instance.payment_type,
+        "amount": instance.amount,
+        "status": instance.status
+    }
 
-    return
+    return payment_response
 
 
 # ---------------------------------------Orderdetail---------------------------
 
 def create_order_detail(shoppingsesion_data, user_id):
     user_detail = get_object_or_404(User, pk=user_id)
-    instance = models.OrderDetails(
-        total=0, payment_id=shoppingsesion_data.payment_id, user_id=user_detail)
-    instance.save()
-    cartitem_list = models.CartItems.objects.get(
-        session_id=shoppingsesion_data)
-    for cartitem in cartitem_list:
-        order_item = models.OrderItems(
-            quantity=cartitem.quantity, product_id=cartitem.product_id, order_id=instance)
-        order_item.save()
-    # return {
-    #     "id": instance.id,
-    #     "payment_id": {
-    #         "id": instance.payment_id.id,
-    #         "amount": instance.payment_id.amount,
-    #         "status": instance.payment_id.status,
-    #         "create_time": instance.payment_id.create_time
-    #     },
-    #     "user_id": {
-    #         'id': instance.user_id.id,
-    #         'name': instance.user_id.name
-    #     }
-    # }
+    order_detail = models.OrderDetails.get(
+        payment_id=shoppingsesion_data.payment_id)
+    if order_detail:
+        instance = models.OrderDetails(
+            total=shoppingsesion_data.total, payment_id=shoppingsesion_data.payment_id, user_id=user_detail)
+        instance.save()
+        cartitem_list = models.CartItems.objects.filter(
+            session_id=shoppingsesion_data)
+        for cartitem in cartitem_list:
+            order_item = models.OrderItems(
+                quantity=cartitem.quantity, product_id=cartitem.product_id, order_id=instance)
+            order_item.save()
+
 
 # ----------------------------OrderItem-------------------------
 
@@ -88,15 +77,18 @@ def add_order_item(orderitem_data):
 # ---------------------------CartItem-----------------------------------
 def create_cart_item(cartitem_data, user_id):
     shopping_session = get_object_or_404(ShoppingSession, user_id=user_id)
+    payment_instance = get_object_or_404(
+        models.PaymentDetail, pk=shopping_session.payment_id.id)
     product_instance = get_object_or_404(
         models.Product, pk=cartitem_data['product_id'])
     instance = models.CartItems(
         quantity=cartitem_data['quantity'], product_id=product_instance, session_id=shopping_session)
     instance.save()
     shopping_session.total = shopping_session.total+1
-    shopping_session.payment_id.amount = shopping_session.payment_id.amount + \
-        cartitem_data.quantity*cartitem_data.product_id.price
+    payment_instance.amount = payment_instance.amount + \
+        instance.quantity*instance.product_id.price
     shopping_session.save()
+    payment_instance.save()
     return {
         'id': instance.id,
         'quantity': instance.quantity,
@@ -112,13 +104,16 @@ def create_cart_item(cartitem_data, user_id):
 def update_cart_item(cart_id, quantity):
     instance = get_object_or_404(models.CartItems, pk=cart_id)
     shopping_session = get_object_or_404(
-        models.CartItems, pk=instance.session_id.id)
-    shopping_session.payment_id.amount = shopping_session.payment_id.amount - \
+        ShoppingSession, pk=instance.session_id.id)
+    payment_instance = get_object_or_404(
+        models.PaymentDetail, pk=instance.session_id.id)
+    payment_instance.amount = payment_instance.amount - \
         instance.quantity*instance.product_id.price
     instance.quantity = quantity
-    instance.save()
-    shopping_session.payment_id.amount = shopping_session.payment_id.amount + \
+    payment_instance.amount = payment_instance.amount + \
         instance.quantity*instance.product_id.price
+    instance.save()
+    payment_instance.save()
     shopping_session.save()
     cart_response = {
         'id': instance.id,
@@ -130,9 +125,13 @@ def update_cart_item(cart_id, quantity):
 def delete_cart_item(cart_id):
     instance = get_object_or_404(models.CartItems, pk=cart_id)
     shopping_session = get_object_or_404(
-        models.CartItems, pk=instance.session_id.id)
+        ShoppingSession, pk=instance.session_id.id)
+    payment_instance = get_object_or_404(
+        models.PaymentDetail, pk=shopping_session.payment_id.id)
     shopping_session.total = shopping_session.total-1
-    shopping_session.payment_id.amount = shopping_session.payment_id.amount + \
+    payment_instance.amount = payment_instance.amount - \
         instance.quantity*instance.product_id.price
     instance.delete()
+    shopping_session.save()
+    payment_instance.save()
     return {'message': "Delete Cart Success"}

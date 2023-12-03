@@ -70,6 +70,7 @@ class OrderDetailsAdmin(admin.ModelAdmin):
         'user_id',
     )
 
+
 class CartItemAdmin(admin.ModelAdmin):
     ordering = ('id',)
     list_display = (

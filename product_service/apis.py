@@ -30,15 +30,21 @@ class ProductDetailApi(views.APIView):
 # --------------------------Session API----------
 
 class OrderDetailListAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, shopping_id):
         user = request.user
-        orderdetail_list = models.Orderdetail.objects.get(user_id=user)
+        orderdetail_list = models.Orderdetail.objects.filter(user_id=user)
         orderdetail_response = [{'total': entry.total, 'payment_amount': entry.payment_id.amount, 'status': entry.payment_id.status, }
                                 for entry in orderdetail_list]
         return response.Response(data=orderdetail_response)
 
 
 class OrderItemsAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, orderdetail_id):
         orderitem_list = get_object_or_404(
             models.OrderItems, order_id=orderdetail_id)
@@ -58,6 +64,9 @@ class OrderItemsAPI(views.APIView):
 
 
 class OrderItemsDetailAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, orderitem_id):
         orderitem = get_object_or_404(models.OrderItems, pk=orderitem_id)
         data_response = {
@@ -87,6 +96,27 @@ class AddCartItemsAPI(views.APIView):
         return response.Response(data=res)
 
 
+class CartItemAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        shopping_session = get_object_or_404(ShoppingSession, user_id=user)
+        cartitem_list = models.CartItems.objects.filter(
+            session_id=shopping_session)
+        data_response = [{
+            'id': instance.id,
+            'quantity': instance.quantity,
+            'product_id': {
+                'id': instance.product_id.id,
+                'name': instance.product_id.name,
+                'price': instance.product_id.price,
+            }
+        } for instance in cartitem_list]
+        return response.Response(data=data_response)
+
+
 class CartItemDetailAPI(views.APIView):
     authentication_classes = (authentication.CustomUserAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -113,35 +143,41 @@ class CartItemDetailAPI(views.APIView):
 # --------------------------------------------Payment----------------------------
 
 class PaymentDetailAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, payment_id):
         payment_item = get_object_or_404(models.PaymentDetail, pk=payment_id)
         payment_response = {
             "id": payment_item.id,
-            "payment_type": payment_item.quantity,
-            "amount": payment_item.quantity,
+            "payment_type": payment_item.payment_type,
+            "amount": payment_item.amount,
             "status": payment_item.status
         }
         return response.Response(data=payment_response)
 
     def put(self, request, payment_id):
-        user = request.user
-        payment_id = get_object_or_404(models.PaymentDetail, pk=payment_id)
-        shoppingsession_data = ShoppingSession.objects.get(
-            payment_id=payment_id)
-        if request.data['status'] == "Completed":
-            service.create_order_detail(
-                shoppingsesion_data=shoppingsession_data, user_id=user.id)
-            shoppingsession_data.delete()
-            payment = service.create_payment_detail()
-            instance = models.ShoppingSession(
-                user_id=user, payment_id=payment, total=0)
-            instance.save()
+        try:
+            user = request.user
+            payment_instance = get_object_or_404(
+                models.PaymentDetail, pk=payment_id)
+            shoppingsession_data = ShoppingSession.objects.get(
+                payment_id=payment_instance)
 
-        data = {
-            'payment_type': request.data['payment_type'],
-            'amount': request.data['amount'],
-            'status': request.data['status']
-        }
-        res = service.update_payment_detail(
-            payment_id=payment_id, data_change=data)
-        return response.Response(data=res)
+            if request.data['status'] == "Completed":
+                service.create_order_detail(
+                    shoppingsesion_data=shoppingsession_data, user_id=user.id)
+                shoppingsession_data.delete()
+                payment = service.create_payment_detail()
+                instance = ShoppingSession(
+                    user_id=user, payment_id=payment, total=0)
+                instance.save()
+            data = {
+                'payment_type': request.data['payment_type'],
+                'status': request.data['status']
+            }
+            res = service.update_payment_detail(
+                payment_id=payment_id, data_change=data)
+            return response.Response(data=res)
+        except:
+            return response.Response(data={'message': "Shopping Session Has been Deleted"})
