@@ -80,5 +80,15 @@ class CartItemAdmin(admin.ModelAdmin):
     )
 
 
+class OrderItemAdmin(admin.ModelAdmin):
+    ordering = ('id',)
+    list_display = (
+        "id",
+        "product_id",
+        'quantity',
+    )
+
+
 admin.site.register(models.PaymentDetail, PaymentDetailAdmin)
 admin.site.register(models.OrderDetails, OrderDetailsAdmin)
+admin.site.register(models.OrderItems, OrderItemAdmin)

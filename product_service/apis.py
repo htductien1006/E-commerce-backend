@@ -163,7 +163,6 @@ class PaymentDetailAPI(views.APIView):
                 models.PaymentDetail, pk=payment_id)
             shoppingsession_data = ShoppingSession.objects.get(
                 payment_id=payment_instance)
-
             if request.data['status'] == "Completed":
                 service.create_order_detail(
                     shoppingsesion_data=shoppingsession_data, user_id=user.id)
@@ -180,4 +179,4 @@ class PaymentDetailAPI(views.APIView):
                 payment_id=payment_id, data_change=data)
             return response.Response(data=res)
         except:
-            return response.Response(data={'message': "Shopping Session Has been Deleted"})
+            return response.Response(data={'message': "Shopping Session Has been Deleted or Can't Handle"})

@@ -6,7 +6,7 @@ urlpatterns = [
     path("product/", apis.ProductApi.as_view(), name="product"),
     path("product/<int:product_id>/",
          apis.ProductDetailApi.as_view(), name="product_detail"),
-    path("product/addcarditem", apis.AddCartItemsAPI.as_view(), name="carditem_add"),
+    path("product/addcarditem/", apis.AddCartItemsAPI.as_view(), name="carditem_add"),
     path("product/carditem/", apis.CartItemAPI.as_view(), name="get_card_item"),
     path("product/carditem/<int:cart_id>/",
          apis.CartItemDetailAPI.as_view(), name="carditem_detail"),

@@ -33,10 +33,8 @@ def update_payment_detail(payment_id, data_change):
 # ---------------------------------------Orderdetail---------------------------
 
 def create_order_detail(shoppingsesion_data, user_id):
-    user_detail = get_object_or_404(User, pk=user_id)
-    order_detail = models.OrderDetails.get(
-        payment_id=shoppingsesion_data.payment_id)
-    if order_detail:
+    try:
+        user_detail = get_object_or_404(User, pk=user_id)
         instance = models.OrderDetails(
             total=shoppingsesion_data.total, payment_id=shoppingsesion_data.payment_id, user_id=user_detail)
         instance.save()
@@ -46,6 +44,8 @@ def create_order_detail(shoppingsesion_data, user_id):
             order_item = models.OrderItems(
                 quantity=cartitem.quantity, product_id=cartitem.product_id, order_id=instance)
             order_item.save()
+    except:
+        print("Order Detail has been created")
 
 
 # ----------------------------OrderItem-------------------------

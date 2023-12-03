@@ -68,11 +68,14 @@ class LogoutApi(views.APIView):
     def post(self, request):
         user = request.user
         resp = response.Response()
-        check_session = models.ShoppingSession.objects.get(user_id=user)
-        if check_session:
-            service.create_order_detail(
-                shoppingsesion_data=check_session, user_id=user.id)
-            check_session.delete()
+        try:
+            check_session = models.ShoppingSession.objects.get(user_id=user)
+            if check_session:
+                service.create_order_detail(
+                    shoppingsesion_data=check_session, user_id=user.id)
+                check_session.delete()
+        except:
+            print("Nothing At All")
         resp.delete_cookie("jwt")
         resp.data = {"message": "Good Bye"}
 
