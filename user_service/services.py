@@ -49,12 +49,16 @@ def user_email_selector(email: str) -> "User":
     return user
 
 
-def create_token(user_id: int) -> str:
+def create_token(user: models.User, user_id: int) -> str:
     payload = dict(
         id=user_id,
         exp=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
         iat=datetime.datetime.utcnow(),
     )
+    if (user):
+        instance = models.ShoppingSession(user_id=user)
+        instance.save()
+
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
 
     return token

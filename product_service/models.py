@@ -46,9 +46,11 @@ class Product(models.Model):
 
 # ----------------------------Order Payment---------------------------------
 class PaymentDetail(models.Model):
-    payment_type = models.CharField(_('Payment Type'), max_length=255)
-    amount = models.IntegerField(_("Amount"))
-    status = models.CharField(_('Status'), max_length=255)
+    payment_type = models.CharField(
+        _('Payment Type'), max_length=255, default="VNPay")
+    amount = models.IntegerField(_("Amount"), default=0)
+    status = models.CharField(
+        _('Status'), max_length=255, default="Not Completed")
     create_time = models.DateTimeField(default=timezone.now)
 
 
@@ -68,13 +70,9 @@ class OrderItems(models.Model):
         "OrderDetails", on_delete=models.CASCADE, to_field="id", default=0)
 
 
-class ShoppingSession(models.Model):
-    total = models.IntegerField(null=False, default=0)
-    user_id = models.ForeignKey(
-        "user_service.User", on_delete=models.CASCADE, to_field="id", default=0)
-
-
 class CartItems(models.Model):
     quantity = models.IntegerField(null=False, default=0)
     product_id = models.ForeignKey(
         "Product", on_delete=models.CASCADE, to_field="id", default=0)
+    session_id = models.ForeignKey(
+        "user_service.ShoppingSession", on_delete=models.CASCADE, to_field="id", default=0)

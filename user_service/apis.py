@@ -1,5 +1,5 @@
 from rest_framework import views, response, exceptions, permissions
-
+from . import models
 from . import serializers as user_serializer
 from . import services, authentication
 
@@ -29,7 +29,7 @@ class LoginApi(views.APIView):
         if not user.check_password(raw_password=password):
             raise exceptions.AuthenticationFailed("Invalid Credentials")
 
-        token = services.create_token(user_id=user.id)
+        token = services.create_token(user=user, user_id=user.id)
 
         resp = response.Response()
 
@@ -65,7 +65,11 @@ class LogoutApi(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
+        user = request.user
         resp = response.Response()
+        check_session = models.ShoppingSession.objects.get(user_id=user)
+        if check_session:
+            check_session.delete()
         resp.delete_cookie("jwt")
         resp.data = {"message": "Good Bye"}
 
