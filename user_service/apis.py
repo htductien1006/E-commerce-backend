@@ -19,24 +19,27 @@ class RegisterApi(views.APIView):
 
 class LoginApi(views.APIView):
     def post(self, request):
-        email = request.data["email"]
-        password = request.data["password"]
+        try:
+            email = request.data["email"]
+            password = request.data["password"]
 
-        user = services.user_email_selector(email)
+            user = services.user_email_selector(email)
 
-        if user is None:
-            raise exceptions.AuthenticationFailed("Invalid Credentials")
+            if user is None:
+                raise exceptions.AuthenticationFailed("Invalid Credentials")
 
-        if not user.check_password(raw_password=password):
-            raise exceptions.AuthenticationFailed("Invalid Credentials")
+            if not user.check_password(raw_password=password):
+                raise exceptions.AuthenticationFailed("Invalid Credentials")
 
-        token = services.create_token(user=user, user_id=user.id)
+            token = services.create_token(user=user, user_id=user.id)
 
-        resp = response.Response()
+            resp = response.Response()
 
-        resp.set_cookie(key="jwt", value=token, httponly=True)
+            resp.set_cookie(key="jwt", value=token, httponly=True)
 
-        return resp
+            return resp
+        except:
+            return response.Response(data={'message': "Wrong Authetication"})
 
 
 class UserApi(views.APIView):
