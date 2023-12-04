@@ -4,6 +4,8 @@ from . import apis
 
 urlpatterns = [
     path("product/", apis.ProductApi.as_view(), name="product"),
+    path("product/shoppingsession",
+         apis.ShoppingSessionAPI.as_view(), name="shopping_session"),
     path("product/<int:product_id>/",
          apis.ProductDetailApi.as_view(), name="product_detail"),
     path("product/addcarditem/", apis.AddCartItemsAPI.as_view(), name="carditem_add"),

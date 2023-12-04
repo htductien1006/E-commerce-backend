@@ -43,14 +43,6 @@ class Product(models.Model):
     promotion_id = models.ForeignKey(
         "Promotion", on_delete=models.CASCADE, to_field='id', default=0)
 
-    # @property
-    # def price(self):
-    #     if self.promotion_id:
-    #         new_price = self.old_price - ((30/100)*self.old_price)
-    #     else:
-    #         new_price = self.old_price
-    #     return new_price
-
 
 # ----------------------------Order Payment---------------------------------
 class PaymentDetail(models.Model):

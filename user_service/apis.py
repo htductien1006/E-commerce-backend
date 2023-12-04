@@ -36,7 +36,7 @@ class LoginApi(views.APIView):
 
             token = services.create_token(user=user, user_id=user.id)
 
-            resp = response.Response()
+            resp = response.Response(data={'token': token})
 
             resp.set_cookie(key="jwt", value=token, httponly=True)
 

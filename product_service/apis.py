@@ -13,8 +13,11 @@ from . import service
 class ProductApi(views.APIView):
     def get(self, request):
         product_list = models.Product.objects.all()
-        list_result = [{'id': entry.id, 'name': entry.name, 'price': entry.price, 'image_url': entry.image_url, 'uom_name': entry.uom_name, 'uom_quantitive': entry.uom_quantitive}
-                       for entry in product_list]
+        list_result = [{'id': entry.id, 'name': entry.name, 'price': entry.price, 'image_url': entry.image_url, 'uom_name': entry.uom_name, 'uom_quantitive': entry.uom_quantitive, "category_id": {
+            "id": entry.category_id.id,
+            "name": entry.category_id.name,
+        }}
+            for entry in product_list]
 
         return response.Response(data=list_result)
 
@@ -27,7 +30,7 @@ class ProductDetailApi(views.APIView):
         return response.Response(data=product_response)
 
 
-# --------------------------Session API----------
+# --------------------------Session API----------------------
 
 class OrderDetailListAPI(views.APIView):
     authentication_classes = (authentication.CustomUserAuthentication,)
@@ -180,3 +183,24 @@ class PaymentDetailAPI(views.APIView):
             return response.Response(data=res)
         except:
             return response.Response(data={'message': "Shopping Session Has been Deleted or Can't Handle"})
+
+# --------------------------------------------Shopping Session----------------------------
+
+
+class ShoppingSessionAPI(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            currentuser = request.user
+            shopping_session = ShoppingSession.objects.get(user_id=currentuser)
+            data_response = {
+                "total": shopping_session.total,
+                'payment_id': {
+                    'id': shopping_session.payment_id.id
+                }
+            }
+            return response.Response(data=data_response)
+        except:
+            return response.Response(data={'message': "Failed"})
