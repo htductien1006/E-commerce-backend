@@ -7,14 +7,17 @@ from . import services, authentication
 
 class RegisterApi(views.APIView):
     def post(self, request):
-        serializer = user_serializer.UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer = user_serializer.UserSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
 
-        data = serializer.validated_data
+            data = serializer.validated_data
 
-        serializer.instance = services.create_user(user_dc=data)
+            serializer.instance = services.create_user(user_dc=data)
 
-        return response.Response(data=serializer.data)
+            return response.Response(data=serializer.data)
+        except:
+            return response.Response(data={'message': "Failed"})
 
 
 class LoginApi(views.APIView):
@@ -69,17 +72,21 @@ class LogoutApi(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        user = request.user
-        resp = response.Response()
         try:
-            check_session = models.ShoppingSession.objects.get(user_id=user)
-            if check_session:
-                service.create_order_detail(
-                    shoppingsesion_data=check_session, user_id=user.id)
-                check_session.delete()
-        except:
-            print("Nothing At All")
-        resp.delete_cookie("jwt")
-        resp.data = {"message": "Good Bye"}
+            user = request.user
+            resp = response.Response()
+            try:
+                check_session = models.ShoppingSession.objects.get(
+                    user_id=user)
+                if check_session:
+                    service.create_order_detail(
+                        shoppingsesion_data=check_session, user_id=user.id)
+                    check_session.delete()
+            except:
+                print("Nothing At All")
+            resp.delete_cookie("jwt")
+            resp.data = {"message": "Good Bye"}
 
-        return resp
+            return resp
+        except:
+            return response.Response(data={"message": "No User"})
