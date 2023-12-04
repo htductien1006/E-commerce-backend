@@ -6,6 +6,14 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
+class ShoppingSession(models.Model):
+    total = models.IntegerField(null=False, default=0)
+    user_id = models.ForeignKey(
+        "user_service.User", on_delete=models.CASCADE, to_field="id", default=0)
+    payment_id = models.ForeignKey(
+        "product_service.PaymentDetail", on_delete=models.CASCADE, to_field="id", default=0)
+
+
 class CustomAccountManager(auth_model.BaseUserManager):
 
     def create_superuser(self, email, username, first_name, password, **other_fields):

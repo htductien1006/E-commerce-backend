@@ -13,4 +13,13 @@ class UserAdmin(admin.ModelAdmin):
     )
 
 
+class ShoppingSessionAdmin(admin.ModelAdmin):
+    ordering = ('id',)
+    list_display = (
+        "id",
+        "total",
+    )
+
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.ShoppingSession, ShoppingSessionAdmin)

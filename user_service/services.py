@@ -5,6 +5,7 @@ from rest_framework import exceptions
 from typing import TYPE_CHECKING
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from product_service import service
 from . import models
 
 if TYPE_CHECKING:
@@ -49,12 +50,18 @@ def user_email_selector(email: str) -> "User":
     return user
 
 
-def create_token(user_id: int) -> str:
+def create_token(user: models.User, user_id: int) -> str:
     payload = dict(
         id=user_id,
-        exp=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+        exp=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
         iat=datetime.datetime.utcnow(),
     )
+    if (user):
+        payment = service.create_payment_detail()
+        instance = models.ShoppingSession(
+            user_id=user, payment_id=payment, total=0)
+        instance.save()
+
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
 
     return token
