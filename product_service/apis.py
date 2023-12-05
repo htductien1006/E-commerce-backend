@@ -22,11 +22,20 @@ class ProductApi(views.APIView):
         return response.Response(data=list_result)
 
 
+class CategoryApi(views.APIView):
+    def get(self, request, category_id):
+        category = models.Category.objects.get(id=category_id)
+        product_list = models.Product.objects.filter(category_id=category)
+        list_result = [{'id': entry.id,  'image_url': entry.image_url, 'name': entry.name, }
+                       for entry in product_list]
+        return response.Response(data=list_result)
+
+
 class ProductDetailApi(views.APIView):
     def get(self, request, product_id):
         product = get_object_or_404(models.Product, pk=product_id)
         product_response = {'id': product.id, 'name': product.name, 'description': product.description, 'price': product.price,
-                            'image_url': product.image_url, 'uom_name': product.uom_name, 'uom_quantitive': product.uom_quantitive}
+                            'image_url': product.image_url, 'uom_name': product.uom_name, 'uom_quantitive': product.uom_quantitive, "category_id": product.category_id.id, "category_name": product.category_id.name}
         return response.Response(data=product_response)
 
 
@@ -194,7 +203,8 @@ class ShoppingSessionAPI(views.APIView):
     def get(self, request):
         try:
             currentuser = request.user
-            shopping_session = ShoppingSession.objects.get(user_id=currentuser)
+            shopping_session = ShoppingSession.objects.filter(
+                user_id=currentuser).first()
             data_response = {
                 "total": shopping_session.total,
                 'payment_id': {

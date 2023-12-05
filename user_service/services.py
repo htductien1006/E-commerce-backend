@@ -62,7 +62,8 @@ def create_token(user: models.User, user_id: int) -> str:
             user_id=user, payment_id=payment, total=0)
         instance.save()
 
-    token = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
+    token = jwt.encode(payload, settings.JWT_SECRET,
+                       algorithm="HS256")
 
     return token
 

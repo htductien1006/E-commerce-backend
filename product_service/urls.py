@@ -8,6 +8,8 @@ urlpatterns = [
          apis.ShoppingSessionAPI.as_view(), name="shopping_session"),
     path("product/<int:product_id>/",
          apis.ProductDetailApi.as_view(), name="product_detail"),
+    path("product/category/<int:category_id>/",
+         apis.CategoryApi.as_view(), name="category_list"),
     path("product/addcarditem/", apis.AddCartItemsAPI.as_view(), name="carditem_add"),
     path("product/carditem/", apis.CartItemAPI.as_view(), name="get_card_item"),
     path("product/carditem/<int:cart_id>/",
