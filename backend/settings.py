@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'user_service',
     'product_service',
     'api',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,6 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
+
+PAYPAL_RECEIVER_EMAIL = 'tienshuti@gmail.com'
+PAYPAL_TEST = True
