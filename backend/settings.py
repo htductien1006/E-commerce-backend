@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'user_service',
     'product_service',
     'api',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,6 @@ AUTH_USER_MODEL = "user_service.User"
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+PAYPAL_RECEIVER_EMAIL = 'tienshuti@gmail.com'
+PAYPAL_TEST = True
