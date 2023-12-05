@@ -124,6 +124,7 @@ class CartItemAPI(views.APIView):
                 'id': instance.product_id.id,
                 'name': instance.product_id.name,
                 'price': instance.product_id.price,
+                'image_url': instance.product_id.image_url,
             }
         } for instance in cartitem_list]
         return response.Response(data=data_response)
