@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404
 from . import models
+from email.message import EmailMessage
+import ssl
+import smtplib
 from user_service.models import ShoppingSession, User
 
 # ------------------------------------Payment------------------------------
@@ -135,3 +138,40 @@ def delete_cart_item(cart_id):
     shopping_session.save()
     payment_instance.save()
     return {'message': "Delete Cart Success"}
+
+
+def send_email(user_email):
+    email_sender = 'souriquecorner@gmail.com'
+    email_password = "qmwl baqz luzi rrhs"
+    email_receiver = user_email
+
+    subject = 'Your Order has been process!'
+
+    body = """
+    Dear Customer,
+
+    Thank you for choosing our shop. We appreciate your business and would like to inform you that your order has been processed successfully. Our team is working diligently to prepare your items for shipment.
+
+    Please note that the estimated delivery time for your order is a few days. However, please keep in mind that this is an estimate and actual delivery times may vary depending on various factors such as your location and any unforeseen circumstances.
+
+    We understand that you are excited to receive your order, and we assure you that we are doing our best to fulfill it as quickly as possible. Once your order is shipped, we will provide you with a tracking number so that you can monitor its progress.
+
+    If you have any questions or concerns regarding your order, please don't hesitate to reach out to our customer service team. We are here to assist you and provide any necessary updates.
+
+    Thank you once again for choosing our shop. We value your business and look forward to delivering your order to you soon.
+
+    Best regards,
+
+    SouriqueCorner Shop
+    """
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    em.set_content(body)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+        smtp.login(email_sender, email_password)
+        smtp.sendmail(email_sender, email_receiver, em.as_string())
