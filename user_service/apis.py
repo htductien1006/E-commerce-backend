@@ -22,7 +22,7 @@ class RegisterApi(views.APIView):
 
 class LoginApi(views.APIView):
     def post(self, request):
-        try:
+        # try:
             email = request.data["email"]
             password = request.data["password"]
 
@@ -41,8 +41,8 @@ class LoginApi(views.APIView):
             resp.set_cookie(key="jwt", value=token, httponly=True)
 
             return resp
-        except:
-            return response.Response(data={'message': "Wrong Authetication"})
+        # except:
+        #     return response.Response(data={'message': "Wrong Authetication"})
 
 
 class UserApi(views.APIView):
