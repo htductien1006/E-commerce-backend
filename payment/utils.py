@@ -22,6 +22,7 @@ def make_paypal_payment(amount, currency, return_url, cancel_url):
         return False,"Failed to authenticate with PayPal API",None
     
     access_token = token_response.json()['access_token']
+    print(access_token)
 
     # Create payment payload
     payment_payload = {
@@ -44,16 +45,16 @@ def make_paypal_payment(amount, currency, return_url, cancel_url):
     }
 
     payment_response = requests.post(payment_url, data=json.dumps(payment_payload), headers=payment_headers)
-    print(payment_response.text)
+    print("payment_response: \n", payment_response.text)
     if payment_response.status_code != 201:
         return False , 'Failed to create PayPal payment.',None
 
-    payment_id = payment_response.json()['id']
+    paypal_id = payment_response.json()['id']
     approval_url = next(link['href'] for link in payment_response.json()['links'] if link['rel'] == 'approval_url')
 
-    return True, payment_id, approval_url
+    return True, paypal_id, approval_url
 
-def verify_paypal_payment(payment_id):
+def verify_paypal_payment(paypal_id, payer_id):
     # Set up PayPal API credentials
     client_id = config("PAYPAL_ID")
     secret = config("PAYPAL_SECRET")
@@ -62,7 +63,8 @@ def verify_paypal_payment(payment_id):
     # Set up API endpoints
     base_url = url
     token_url = base_url + '/v1/oauth2/token'
-    payment_url = base_url + '/v1/payments/payment'
+    payment_url = base_url + f'/v1/payments/payment'
+    print(payment_url)
 
     # Request an access token
     token_payload = {'grant_type': 'client_credentials'}
@@ -73,6 +75,7 @@ def verify_paypal_payment(payment_id):
         raise Exception('Failed to authenticate with PayPal API.')
 
     access_token = token_response.json()['access_token']
+    print(access_token)
 
     # Retrieve payment details
     payment_headers = {
@@ -80,20 +83,14 @@ def verify_paypal_payment(payment_id):
         'Authorization': f'Bearer {access_token}'
     }
 
-    payment_details_url = f'{payment_url}/{payment_id}'
-    payment_details_response = requests.get(payment_details_url, headers=payment_headers)
+    payment_details_url = f'{payment_url}/{paypal_id}/execute'
+    data = { "payer_id": f'{payer_id}' }
+    payment_details_response = requests.post(payment_details_url, data=json.dumps(data) ,headers=payment_headers)
+
+    print(payment_details_response.status_code)
 
     if payment_details_response.status_code != 200:
         raise Exception('Failed to retrieve PayPal payment details.')
 
-    payment_status = payment_details_response.json()['state']
-    if payment_status == 'approved':
-        # Payment is successful, process the order
-        # Retrieve additional payment details if needed
-        payer_email = payment_details_response.json()['payer']['payer_info']['email']
-        # ... process the order ...
-        
-        return True
     else:
-        # Payment failed or was canceled
-        return False
+        return True
