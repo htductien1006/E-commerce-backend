@@ -50,7 +50,7 @@ class User(auth_model.AbstractUser, auth_model.PermissionsMixin):
     last_name = models.CharField(verbose_name="Last Name", max_length=255)
     username = models.CharField(verbose_name="User Name", max_length=255)
     email = models.EmailField(verbose_name="Email",
-                              max_length=255, unique=True)
+                              max_length=255, unique=True)  
     # --Unnessary--
     phone_number = models.CharField(verbose_name="Phone Number")
     country = models.CharField(verbose_name="Country")

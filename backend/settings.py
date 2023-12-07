@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_service',
     'product_service',
+    'payment',
     'api',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +142,10 @@ AUTH_USER_MODEL = "user_service.User"
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
+
+PAYPAL_RECEIVER_EMAIL = 'sb-8zpoz28491870@business.example.com'
+PAYPAL_TEST = True

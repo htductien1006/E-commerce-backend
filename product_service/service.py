@@ -79,7 +79,7 @@ def add_order_item(orderitem_data):
 
 # ---------------------------CartItem-----------------------------------
 def create_cart_item(cartitem_data, user_id):
-    shopping_session = get_object_or_404(ShoppingSession, user_id=user_id)
+    shopping_session = ShoppingSession.objects.filter(user_id=user_id).first()
     payment_instance = get_object_or_404(
         models.PaymentDetail, pk=shopping_session.payment_id.id)
     product_instance = get_object_or_404(
