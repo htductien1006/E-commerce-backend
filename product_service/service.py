@@ -10,7 +10,7 @@ from user_service.models import ShoppingSession, User
 
 def create_payment_detail():
     instance = models.PaymentDetail(
-        payment_type="VNPay", amount=0, status="Not Completed")
+        payment_type="Paypal", amount=0, status="Not Completed")
     instance.save()
 
     return instance
