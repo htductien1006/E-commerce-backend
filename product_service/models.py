@@ -47,7 +47,7 @@ class Product(models.Model):
 # ----------------------------Order Payment---------------------------------
 class PaymentDetail(models.Model):
     payment_type = models.CharField(
-        _('Payment Type'), max_length=255, default="VNPay")
+        _('Payment Type'), max_length=255, default="Paypal")
     amount = models.IntegerField(_("Amount"), default=0)
     status = models.CharField(
         _('Status'), max_length=255, default="Not Completed")
