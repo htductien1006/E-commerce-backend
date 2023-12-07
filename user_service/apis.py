@@ -21,6 +21,8 @@ class RegisterApi(views.APIView):
 
 
 class LoginApi(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         # try:
             email = request.data["email"]
@@ -89,4 +91,4 @@ class LogoutApi(views.APIView):
 
             return resp
         except:
-            return response.Response(data={"message": "No User"})
+            return response.Response(data={"message": "Good Bye"})
