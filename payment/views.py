@@ -44,7 +44,23 @@ class VerifyPaymentAPI(APIView):
         paypal_payment_status = verify_paypal_payment(paypal_id, payer_id)
 
         if paypal_payment_status:
+            # -----------------------Create OrderDetail----------------------------
+            shopping_session = ShoppingSession.objects.filter(
+                user_id=user).first()
+            service.create_order_detail(
+                shoppingsesion_data=shopping_session, user_id=user.id)
+            payment_of_shoppong_session = get_object_or_404(
+                models.PaymentDetail, pk=shopping_session.payment_id.id)
+            payment_of_shoppong_session.status = "Completed"
+            payment_of_shoppong_session.save()
+            shopping_session.delete()
+            payment = service.create_payment_detail()
+            instance = ShoppingSession(
+                user_id=user, payment_id=payment, total=0)
+            instance.save()
+            # -----------------------Email Sender----------------------------------
             service.send_email(user_email=user.email)
+
             return Response({"success": True, "msg": "payment improved"}, status=200)
         else:
             return Response({"success": False, "msg": "payment failed or cancelled"}, status=200)

@@ -114,7 +114,7 @@ class CartItemAPI(views.APIView):
 
     def get(self, request):
         user = request.user
-        shopping_session = get_object_or_404(ShoppingSession, user_id=user)
+        shopping_session = ShoppingSession.objects.filter(user_id=user).first()
         cartitem_list = models.CartItems.objects.filter(
             session_id=shopping_session)
         data_response = [{
